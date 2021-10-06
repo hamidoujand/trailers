@@ -1,12 +1,10 @@
 import express from "express";
 import ApiError from "./utils/ApiError";
+import trailersRouter from "./routes/trailers";
 let app = express();
 
-app.get("/", (req, res) => {
-  res.send({
-    msg: "some thing cool",
-  });
-});
+//api
+app.use("/api/v1/trailers", trailersRouter);
 
 app.all("*", (req, res, next) => {
   let err = new ApiError(`Can't find "${req.originalUrl}"`, 404);
