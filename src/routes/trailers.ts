@@ -1,11 +1,7 @@
 import { Router } from "express";
-
+import * as trailersController from "../controllers/trailers";
 let router = Router();
 
-router.get("/", (req, res) => {
-  res.send({
-    msg: "all trailer",
-  });
-});
+router.get("/", trailersController.getTrailer);
 
 export default router;
