@@ -4,4 +4,5 @@ dotenv.config();
 export default {
   port: parseInt(process.env.PORT ? process.env.PORT : "4000"),
   movieDBApi: process.env.MOVIE_DB_API,
+  youtubeApi: process.env.YOUTUBE_API_KEY,
 };
