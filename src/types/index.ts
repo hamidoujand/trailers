@@ -4,7 +4,7 @@ export interface Movie {
   title: string;
   genre_ids: number[];
   overview: string;
-  poster_path: string;
+  poster_path: null | string;
   vote_average: number;
 }
 
