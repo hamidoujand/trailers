@@ -3,6 +3,8 @@ import { catchAsync } from "../utils/catchAsync";
 import { tmdb } from "../api/tmdb";
 import { CustomMovie, MovieDBSearch } from "../types";
 import { findGenres } from "../utils/findGenres";
+import { google } from "googleapis";
+import config from "../config";
 
 export let getTrailer = catchAsync(async (req, res, next) => {
   let movieName = req.query.search;
@@ -47,12 +49,23 @@ export let getTrailer = catchAsync(async (req, res, next) => {
       };
     }
   );
-
+  //all the movies with "genres" all filled in
   let movies = await Promise.all(moviesPromises);
 
   res.send({
     msg: "hello",
     // response: movies,
     movies,
+  });
+});
+
+export let googleSearch = catchAsync(async (req, res, next) => {
+  let result = await google.youtube("v3").search.list({
+    key: config.youtubeApi,
+    part: ["snippet"],
+    q: "free guy trailer",
+  });
+  res.send({
+    data: result.data,
   });
 });
