@@ -5,6 +5,7 @@ import { CustomMovie, MovieDBSearch } from "../types";
 import { findGenres } from "../utils/findGenres";
 import { google } from "googleapis";
 import config from "../config";
+import { redisSet } from "../utils/asyncRedis";
 
 export let getTrailer = catchAsync(async (req, res, next) => {
   let movieName = req.query.search;
@@ -27,8 +28,8 @@ export let getTrailer = catchAsync(async (req, res, next) => {
   }
 
   //map the results and create a custom movie obj out of them
-  let moviesPromises: Promise<CustomMovie>[] = data.results.map(
-    async ({
+  let trailers: CustomMovie[] = data.results.map(
+    ({
       title,
       genre_ids,
       id,
@@ -39,23 +40,30 @@ export let getTrailer = catchAsync(async (req, res, next) => {
     }) => {
       return {
         title,
-        genres: await findGenres(genre_ids),
+        genres: genre_ids,
         id,
         language: original_language,
         overview,
-        poster: poster_path,
+        poster: poster_path
+          ? `https://image.tmdb.org/t/p/original${poster_path}`
+          : null,
         vote: vote_average,
         video: "",
       };
     }
   );
-  //all the movies with "genres" all filled in
-  let movies = await Promise.all(moviesPromises);
+
+  //cache the result into redis by  movie id
+
+  let cachePromises = trailers.map((trailer) => {
+    return redisSet(trailer.id.toString(), JSON.stringify(trailer));
+  });
+  //wait for all to be saved
+  await Promise.all(cachePromises);
 
   res.send({
-    msg: "hello",
-    // response: movies,
-    movies,
+    status: "success",
+    trailers,
   });
 });
 
@@ -65,7 +73,13 @@ export let googleSearch = catchAsync(async (req, res, next) => {
     part: ["snippet"],
     q: "free guy trailer",
   });
+  let trailers = result.data.items;
+  if (!trailers) {
+    let err = new ApiError("trailer not found", 404);
+    return next(err);
+  }
+
   res.send({
-    data: result.data,
+    data: trailers[0],
   });
 });
