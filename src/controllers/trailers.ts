@@ -5,7 +5,7 @@ import { CustomMovie, MovieDBSearch } from "../types";
 import { findGenres } from "../utils/findGenres";
 import { google } from "googleapis";
 import config from "../config";
-import { redisSet } from "../utils/asyncRedis";
+import { redisSet, redisGet } from "../utils/asyncRedis";
 
 export let getTrailer = catchAsync(async (req, res, next) => {
   let movieName = req.query.search;
@@ -48,7 +48,7 @@ export let getTrailer = catchAsync(async (req, res, next) => {
           ? `https://image.tmdb.org/t/p/original${poster_path}`
           : null,
         vote: vote_average,
-        video: "",
+        video: null,
       };
     }
   );
@@ -67,19 +67,28 @@ export let getTrailer = catchAsync(async (req, res, next) => {
   });
 });
 
-export let googleSearch = catchAsync(async (req, res, next) => {
+export let youtubeSearch = catchAsync(async (req, res, next) => {
+  //get the movie id from params
+  let movieId = req.params.movieId;
+  // search redis for that id
+  let movie = await redisGet(movieId);
+  //here we need to search youtube for the trailer
+
   let result = await google.youtube("v3").search.list({
     key: config.youtubeApi,
     part: ["snippet"],
-    q: "free guy trailer",
+    q: `${movie.title} official trailer`,
   });
   let trailers = result.data.items;
   if (!trailers) {
     let err = new ApiError("trailer not found", 404);
     return next(err);
   }
+  let youtubeTrailerId = trailers[0].id?.videoId;
 
+  movie.video = youtubeTrailerId;
   res.send({
-    data: trailers[0],
+    movie,
+    trailer: trailers[0],
   });
 });
