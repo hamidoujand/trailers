@@ -1,7 +1,9 @@
 import { tmdb } from "../api/tmdb";
 import { Genres } from "../types";
 
-export let findGenres = async (genresIds: number[]): Promise<string[]> => {
+export let findGenres = async (
+  genresIds: (number | string)[]
+): Promise<string[]> => {
   try {
     let { data } = await tmdb.get<Genres>("/genre/movie/list");
     let genres: string[] = [];

@@ -12,7 +12,7 @@ export interface CustomMovie {
   id: number;
   language: string;
   title: string;
-  genres: string | number[];
+  genres: (string | number)[];
   overview: string;
   poster: string | null;
   vote: number;
