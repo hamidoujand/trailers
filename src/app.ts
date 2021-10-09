@@ -1,11 +1,14 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import ApiError from "./utils/ApiError";
 import trailersRouter from "./routes/trailers";
 import { globalErrorHandler } from "./controllers/errorController";
 let app = express();
 
 //middlewares
+app.use(helmet());
+
 app.use(
   rateLimit({
     max: 20,
