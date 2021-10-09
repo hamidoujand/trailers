@@ -1,8 +1,18 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import ApiError from "./utils/ApiError";
 import trailersRouter from "./routes/trailers";
 import { globalErrorHandler } from "./controllers/errorController";
 let app = express();
+
+//middlewares
+app.use(
+  rateLimit({
+    max: 20,
+    windowMs: 60 * 60 * 1000,
+    message: "Too many request from this IP please try again in 1 hour",
+  })
+);
 
 //api
 app.use("/api/v1/trailers", trailersRouter);
