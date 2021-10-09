@@ -86,9 +86,12 @@ export let youtubeSearch = catchAsync(async (req, res, next) => {
   }
   let youtubeTrailerId = trailers[0].id?.videoId;
 
+  //get all the genres
+  let genres = await findGenres(movie.genres);
+  //assign genres to movie
+  movie.genres = genres;
   movie.video = youtubeTrailerId;
   res.send({
     movie,
-    trailer: trailers[0],
   });
 });
