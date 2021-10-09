@@ -2,6 +2,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
+import compression from "compression";
 import ApiError from "./utils/ApiError";
 import trailersRouter from "./routes/trailers";
 import { globalErrorHandler } from "./controllers/errorController";
@@ -17,6 +18,7 @@ app.use(
     message: "Too many request from this IP please try again in 1 hour",
   })
 );
+app.use(compression());
 
 //api
 app.use("/api/v1/trailers", trailersRouter);
