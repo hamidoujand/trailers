@@ -3,12 +3,14 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
 import compression from "compression";
+import cors from "cors";
 import ApiError from "./utils/ApiError";
 import trailersRouter from "./routes/trailers";
 import { globalErrorHandler } from "./controllers/errorController";
 let app = express();
 
 //middlewares
+app.use(cors());
 app.use(helmet());
 app.use(hpp());
 app.use(

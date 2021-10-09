@@ -1,3 +1,5 @@
 node_modules
 .env
 request.http
+
+./client/node_modules
