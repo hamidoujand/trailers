@@ -16,7 +16,7 @@ export interface CustomMovie {
   overview: string;
   poster: string | null;
   vote: number;
-  video: string;
+  video: string | null | undefined;
 }
 
 export interface MovieDBSearch {
