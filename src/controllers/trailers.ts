@@ -37,6 +37,7 @@ export let getTrailer = catchAsync(async (req, res, next) => {
       overview,
       poster_path,
       vote_average,
+      release_date,
     }) => {
       return {
         title,
@@ -49,6 +50,7 @@ export let getTrailer = catchAsync(async (req, res, next) => {
           : null,
         vote: vote_average,
         video: null,
+        releaseDate: release_date ? new Date(release_date) : null,
       };
     }
   );
