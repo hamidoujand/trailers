@@ -50,7 +50,7 @@ export let getTrailer = catchAsync(async (req, res, next) => {
           : null,
         vote: vote_average,
         video: null,
-        releaseDate: release_date ? new Date(release_date) : null,
+        releaseDate: release_date,
       };
     }
   );
@@ -74,18 +74,20 @@ export let youtubeSearch = catchAsync(async (req, res, next) => {
   let movieId = req.params.movieId;
   // search redis for that id
   let movie = await redisGet(movieId);
-  //here we need to search youtube for the trailer
+  let year = new Date(movie.releaseDate).getFullYear();
 
+  //here we need to search youtube for the trailer
   let result = await google.youtube("v3").search.list({
     key: config.youtubeApi,
     part: ["snippet"],
-    q: `${movie.title} official trailer`,
+    q: `${movie.title} ${year} official trailer`,
   });
   let trailers = result.data.items;
   if (!trailers) {
     let err = new ApiError("trailer not found", 404);
     return next(err);
   }
+
   let youtubeTrailerId = trailers[0].id?.videoId;
 
   //get all the genres
