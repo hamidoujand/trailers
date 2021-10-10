@@ -6,6 +6,7 @@ export interface Movie {
   overview: string;
   poster_path: null | string;
   vote_average: number;
+  release_date: string;
 }
 
 export interface CustomMovie {
@@ -17,6 +18,7 @@ export interface CustomMovie {
   poster: string | null;
   vote: number;
   video: string | null | undefined;
+  releaseDate: Date | null;
 }
 
 export interface MovieDBSearch {
