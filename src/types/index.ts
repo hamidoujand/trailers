@@ -18,7 +18,7 @@ export interface CustomMovie {
   poster: string | null;
   vote: number;
   video: string | null | undefined;
-  releaseDate: Date | null;
+  releaseDate: string;
 }
 
 export interface MovieDBSearch {
