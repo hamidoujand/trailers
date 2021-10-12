@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(hpp());
 app.use(
   rateLimit({
-    max: 20,
+    max: 100,
     windowMs: 60 * 60 * 1000,
     message: "Too many request from this IP please try again in 1 hour",
   })
