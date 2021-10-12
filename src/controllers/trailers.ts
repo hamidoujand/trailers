@@ -75,7 +75,14 @@ export let youtubeSearch = catchAsync(async (req, res, next) => {
   // search redis for that id
   let movie = await redisGet(movieId);
   let year = new Date(movie.releaseDate).getFullYear();
-
+  //request youtube if the movie in redis dose not have a video id
+  if (movie.video) {
+    //we return that movie
+    console.log("from  cache");
+    return res.send({
+      movie,
+    });
+  }
   //here we need to search youtube for the trailer
   let result = await google.youtube("v3").search.list({
     key: config.youtubeApi,
@@ -95,6 +102,9 @@ export let youtubeSearch = catchAsync(async (req, res, next) => {
   //assign genres to movie
   movie.genres = genres;
   movie.video = youtubeTrailerId;
+  //here we cache it for next request
+  await redisSet(movieId, JSON.stringify(movie));
+  console.log("saved into cache");
   res.send({
     movie,
   });
