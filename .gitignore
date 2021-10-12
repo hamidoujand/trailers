@@ -1,5 +1,6 @@
 node_modules
 .env
 request.http
-
+.vscode
 ./client/node_modules
+build

@@ -55,10 +55,25 @@ export let getTrailer = catchAsync(async (req, res, next) => {
     }
   );
 
-  //cache the result into redis by  movie id
+  // filter out all the movies that are not already in redis
+  let newTrailers = await trailers.reduce(
+    async (newTrailers, currentTrailer) => {
+      let dbTrailer = await redisGet(currentTrailer.id.toString());
+      if (!dbTrailer) {
+        (await newTrailers).push(currentTrailer);
+        return newTrailers;
+      } else {
+        return newTrailers;
+      }
+    },
+    Promise.resolve(<CustomMovie[]>[])
+  );
 
-  let cachePromises = trailers.map((trailer) => {
-    return redisSet(trailer.id.toString(), JSON.stringify(trailer));
+  //cache the result into redis by  movie id
+  let cachePromises = newTrailers.map((trailer) => {
+    if (trailer) {
+      return redisSet(trailer.id.toString(), JSON.stringify(trailer));
+    }
   });
   //wait for all to be saved
   await Promise.all(cachePromises);
@@ -73,7 +88,11 @@ export let youtubeSearch = catchAsync(async (req, res, next) => {
   //get the movie id from params
   let movieId = req.params.movieId;
   // search redis for that id
-  let movie = await redisGet(movieId);
+  let movie = await redisGet(movieId); // check for existence of movie
+  if (!movie) {
+    let err = new ApiError("movie notfound", 404);
+    return next(err);
+  }
   let year = new Date(movie.releaseDate).getFullYear();
   //request youtube if the movie in redis dose not have a video id
   if (movie.video) {
