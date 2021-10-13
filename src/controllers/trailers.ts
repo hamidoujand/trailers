@@ -28,32 +28,34 @@ export let getTrailer = catchAsync(async (req, res, next) => {
   }
 
   //map the results and create a custom movie obj out of them
-  let trailers: CustomMovie[] = data.results.map(
-    ({
-      title,
-      genre_ids,
-      id,
-      original_language,
-      overview,
-      poster_path,
-      vote_average,
-      release_date,
-    }) => {
-      return {
+  let trailers: CustomMovie[] = data.results
+    .filter((trailer) => trailer.poster_path && trailer.vote_average)
+    .map(
+      ({
         title,
-        genres: genre_ids,
+        genre_ids,
         id,
-        language: original_language,
+        original_language,
         overview,
-        poster: poster_path
-          ? `https://image.tmdb.org/t/p/original${poster_path}`
-          : null,
-        vote: vote_average,
-        video: null,
-        releaseDate: release_date,
-      };
-    }
-  );
+        poster_path,
+        vote_average,
+        release_date,
+      }) => {
+        return {
+          title,
+          genres: genre_ids,
+          id,
+          language: original_language,
+          overview,
+          poster: poster_path
+            ? `https://image.tmdb.org/t/p/original${poster_path}`
+            : null,
+          vote: vote_average,
+          video: null,
+          releaseDate: release_date,
+        };
+      }
+    );
 
   // filter out all the movies that are not already in redis
   let newTrailers = await trailers.reduce(
