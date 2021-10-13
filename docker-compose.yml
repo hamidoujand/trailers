@@ -3,7 +3,7 @@ version: "3"
 services:
   redis:
     image: redis
-  express:
+  express-server:
     build:
       context: .
       dockerfile: Dockerfile.dev
