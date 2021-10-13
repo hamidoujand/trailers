@@ -7,10 +7,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    ports:
-      - "8000:8000"
+
     volumes:
       - /app/node_modules
       - .:/app
     environment:
       - PORT=8000
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "3000:80"
